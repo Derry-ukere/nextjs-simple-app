@@ -1,4 +1,4 @@
-import { createStore, appMiddleware } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import thunkMiddleware from 'redux-thunk'
 import data from './data/data.json'
@@ -11,7 +11,7 @@ const startState = {
 // redux actions
 export const initialCards = () => {
   return {
-    type: initialCards,
+    type: 'INITIALCARDS',
     cards: data,
   }
 }
@@ -25,11 +25,27 @@ export const addItem = (item) => {
 
 // redux reucers
 
+export const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'INITIALCARDS':
+      return {
+        cards: action.cards,
+      }
+    case 'ADD':
+      return {
+        ...state,
+        cards: [...state.cards, action.item],
+      }
+    default:
+      return state
+  }
+}
+
 // create store
-export const initialStore = (initialState = startState) => {
+export const initStore = (initialState = startState) => {
   return createStore(
     reducer,
     initialState,
-    composeWithDevTools(appMiddleware(thunkMiddleware))
+    composeWithDevTools(applyMiddleware(thunkMiddleware))
   )
 }
